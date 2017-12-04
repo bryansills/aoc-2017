@@ -1,23 +1,33 @@
 object Day01 {
 
-  fun sum(input: String): Int {
-    val intInput = inputToIntList(input)
-    val circledInput = intInput + listOf(intInput[0])
-    return circledInput.windowed(2)
-        .filter { it[0] == it[1] }
-        .sumBy { it[0] }
-  }
+    fun sum(input: String): Int {
+        var value = 0
 
-  fun sum2(input: String): Int {
-    val intInput = inputToIntList(input)
-    val size = intInput.size
-    val halfSize = size / 2
-    val doubleInput = intInput + intInput
-    return (0 until size)
-        .filter { doubleInput[it] == doubleInput[it + halfSize] }
-        .sumBy { doubleInput[it] }
-  }
+        for (ind in 0 until input.length) {
+            val curChar = input[ind]
 
-  private fun inputToIntList(input: String) = input.map { Integer.valueOf(it.toString()) }
+            if (curChar == input[(ind + 1) % input.length]) {
+                value += curChar.toString().toInt()
+            }
+        }
+
+        return value
+    }
+
+    fun sum2(input: String): Int {
+        var value = 0
+
+        for (ind in 0 until input.length) {
+            val curChar = input[ind]
+
+            if (curChar == input[(ind + (input.length / 2)) % input.length]) {
+                value += curChar.toString().toInt()
+            }
+        }
+
+        return value
+    }
+
+    private fun inputToIntList(input: String) = input.map { Integer.valueOf(it.toString()) }
 
 }

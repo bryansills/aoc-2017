@@ -21,3 +21,7 @@ ultimate/out
 ultimate/tmp
 ultimate/workspace.xml
 ultimate/*.versionsBackup
+.idea
+/build/
+*.iml
+.gradle
