@@ -67,23 +67,28 @@ object Day07 {
     }
 
     private fun findNode(node: Node): Node {
-        var result = node
+        if (node.children.size > 2) {
+            var minNode = node.children.minBy { it.totalWeight() }
+            var maxNode = node.children.maxBy { it.totalWeight() }
 
-        var left = node.children.minBy { it.totalWeight() }
-        var right = node.children.maxBy { it.totalWeight() }
+            var minWeight = minNode?.totalWeight() ?: throw IllegalStateException("no min?")
+            var maxWeight = maxNode?.totalWeight() ?: throw IllegalStateException("no max?")
 
-        var leftWeight = left?.totalWeight() ?: throw IllegalStateException("no min?")
-        var rightWeight = right?.totalWeight() ?: throw IllegalStateException("no max?")
+            if (node.children.find { minNode.name != it.name && minWeight == it.totalWeight() } == null) {
+                return findNode(maxNode)
+            }
 
-        if (node.children.find { left.name != it.name && leftWeight == it.totalWeight() } == null) {
-            result = findNode(left)
+            if (node.children.find { maxNode.name != it.name && maxWeight == it.totalWeight() } == null) {
+                return findNode(minNode)
+            }
+
+            return node
+        } else if (node.children.size == 2) {
+            // TODO: FINISH HERE
+            return node
+        } else {
+            return node
         }
-
-        if (node.children.find { right.name != it.name && rightWeight == it.totalWeight() } == null) {
-            result = findNode(right)
-        }
-
-        return result
     }
 }
 
