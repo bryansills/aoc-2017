@@ -5,5 +5,5 @@ ktlj (57)
 fwft (72) -> ktlj, cntj, xhth
 qoyq (66)
 padx (40) -> pbga, havc, qoyq
-tknk (41) -> ugml, padx, fwft
+tknk (41) -> padx, fwft
 cntj (57)

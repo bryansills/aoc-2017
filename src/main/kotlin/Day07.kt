@@ -1,6 +1,5 @@
 import utils.splitNewlines
 import utils.splitWhitespace
-import java.lang.Comparable
 
 object Day07 {
 
@@ -19,11 +18,10 @@ object Day07 {
         val nodes = createNodes(splitInput)
         val rootNode = linkNodes(nodes)
 
-        var weirdNode = findNode(rootNode)
+        val weirdNode = findNode(rootNode)
+        val expectedWeight = getExpectedWeight(weirdNode)
 
-        val sisterNode = weirdNode.parent?.children?.find { it.name != weirdNode.name } ?: throw IllegalStateException("no sis node?")
-
-        return sisterNode.totalWeight() - weirdNode.children.sumBy { it.totalWeight() }
+        return expectedWeight - weirdNode.children.sumBy { it.totalWeight() }
     }
 
     private fun createNodes(input: List<List<String>>): List<Node> {
@@ -67,28 +65,52 @@ object Day07 {
     }
 
     private fun findNode(node: Node): Node {
-        if (node.children.size > 2) {
-            var minNode = node.children.minBy { it.totalWeight() }
-            var maxNode = node.children.maxBy { it.totalWeight() }
+        when {
+            node.children.size > 2 -> {
+                val minNode = node.children.minBy { it.totalWeight() }
+                val maxNode = node.children.maxBy { it.totalWeight() }
 
-            var minWeight = minNode?.totalWeight() ?: throw IllegalStateException("no min?")
-            var maxWeight = maxNode?.totalWeight() ?: throw IllegalStateException("no max?")
+                val minWeight = minNode?.totalWeight() ?: throw IllegalStateException("no min?")
+                val maxWeight = maxNode?.totalWeight() ?: throw IllegalStateException("no max?")
 
-            if (node.children.find { minNode.name != it.name && minWeight == it.totalWeight() } == null) {
-                return findNode(maxNode)
+                if (node.children.find { minNode.name != it.name && minWeight == it.totalWeight() } == null) {
+                    return findNode(minNode)
+                }
+
+                if (node.children.find { maxNode.name != it.name && maxWeight == it.totalWeight() } == null) {
+                    return findNode(maxNode)
+                }
+
+                return node
             }
+            node.children.size == 2 -> {
+                if (node.children[0].totalWeight() != node.children[1].totalWeight()) {
+                    val minNode = node.children.minBy { it.totalWeight() } ?: throw IllegalStateException("wtf happened")
+                    val maxNode = node.children.maxBy { it.totalWeight() } ?: throw IllegalStateException("wtf happened")
 
-            if (node.children.find { maxNode.name != it.name && maxWeight == it.totalWeight() } == null) {
-                return findNode(minNode)
+                    val expectedWeight = getExpectedWeight(node)
+                    return when {
+                        expectedWeight > node.totalWeight() -> findNode(minNode)
+                        expectedWeight < node.totalWeight() -> findNode(maxNode)
+                        else -> throw IllegalStateException("siblings shouldn't weigh the same if children don't weigh the same")
+                    }
+                }
+
+                return node
             }
-
-            return node
-        } else if (node.children.size == 2) {
-            // TODO: FINISH HERE
-            return node
-        } else {
-            return node
+            node.children.size == 1 -> return findNode(node.children[0])
+            else -> return node
         }
+    }
+
+    private fun getExpectedWeight(node: Node): Int {
+        val parent = node.parent
+        val sibling = parent?.children?.find { node != it }
+
+        sibling?.let { return it.totalWeight() }
+        parent?.let { return getExpectedWeight(parent) - it.weight }
+
+        throw IllegalStateException("ambiguous situation")
     }
 }
 
